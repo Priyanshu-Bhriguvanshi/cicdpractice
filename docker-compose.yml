@@ -1,9 +1,6 @@
-version: '3.8'
-
 services:
   web-app:
-    # IMPORTANT: Change 'priyanshu' to your actual Docker Hub username in this file
-    image: priyanshu/mern-app:latest
+    image: priyanshusingh144/mern-app:latest
     ports:
       - "3000:3000"
     restart: always
