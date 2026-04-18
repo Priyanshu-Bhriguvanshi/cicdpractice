@@ -34,11 +34,26 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
+
   deploy:
     needs: build-and-push
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
     steps:
+      - name: 🛒 Checkout Code
+        uses: actions/checkout@v4
+
+      # --- NEW STEP: Copy the Compose file to the VM ---
+      - name: 📁 Copy docker-compose.yml to VM
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.ORACLE_HOST }}
+          username: ubuntu
+          key: ${{ secrets.ORACLE_SSH_KEY }}
+          source: "docker-compose.yml"
+          target: "~/mearn/"
+
+      # --- SSH and Run ---
       - name: 🚀 Deploy to Oracle Cloud
         uses: appleboy/ssh-action@master
         with:
@@ -46,8 +61,7 @@ jobs:
           username: ubuntu
           key: ${{ secrets.ORACLE_SSH_KEY }}
           script: |
-            # Update this path if your VM project folder name is different
-            cd ~/mearn/ || mkdir -p ~/mearn
+            cd ~/mearn/
             docker compose pull
             docker compose up -d
             docker image prune -f
