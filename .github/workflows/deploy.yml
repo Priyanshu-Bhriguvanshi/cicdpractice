@@ -19,6 +19,9 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
+      - name: 🛠 Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
       - name: 📦 Build & Multi-Tag Image
         uses: docker/build-push-action@v5
         with:
@@ -43,7 +46,8 @@ jobs:
           username: ubuntu
           key: ${{ secrets.ORACLE_SSH_KEY }}
           script: |
-            cd ~/mearn/
+            # Update this path if your VM project folder name is different
+            cd ~/mearn/ || mkdir -p ~/mearn
             docker compose pull
             docker compose up -d
             docker image prune -f
